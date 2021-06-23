@@ -1,32 +1,28 @@
 # RewatchReminder
 Movie Rewatch Reminder - Watch, Wait, Repeat.
 
-Comapny Name
-
-- WhiteOfWay Technology
+Company Name
+- White Of Way Technology
 
 Name Idea:
-
 - Rewatcher
 - Watch It Again
 - Watch, Wait, Repeat.
 - SeenItSeenItWatchIt
 - SeenItSawItWatchIt
 
+Features
 - Login
 - Your current Mood?
 - Who are you with?
-
 - Ads
 - Donate
 
 Options
-
-- Layout
-- ?
+- Layout Customize
+- Link Accounts?
 
 Movie Metadata
-
 - Watched When
 - Watched With
 - Watched Where
