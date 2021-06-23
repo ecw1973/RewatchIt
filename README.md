@@ -1,8 +1,17 @@
 # RewatchReminder
 Movie Rewatch Reminder - Watch, Wait, Repeat.
 
+- Login
 - Your current Mood?
 - Who are you with?
+
+- Ads
+- Donate
+
+Options
+
+- Layout
+- ?
 
 Movie Metadata
 
