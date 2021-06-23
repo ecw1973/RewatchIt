@@ -1,5 +1,5 @@
 # RewatchReminder
-Movie Rewatch Reminder
+Movie Rewatch Reminder - Watch, Wait, Repeat.
 
 - Your current Mood?
 - Who are you with?
