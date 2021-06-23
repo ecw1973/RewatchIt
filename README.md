@@ -50,8 +50,11 @@ Add Movies
 
 Rewatch Alogrythm:
 
-- Date since watched.
-- Who you were/are with.
-- High plot complexity
+- Date since last watched.
+- Times watched
+- Who you were/are with when watched
+- Who you are with now.
+- Watched Frequency of Others
+- Plot complexity
 - Enjoymnet on first/last watch
-- Mood match
+- Mood matching
