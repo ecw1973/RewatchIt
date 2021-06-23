@@ -1,4 +1,5 @@
 # RewatchReminder
+
 Movie Rewatch Reminder - Watch, Wait, Repeat.
 
 Company Name
@@ -17,6 +18,7 @@ Features
 - Who are you with?
 - Ads
 - Donate
+- Quiz Builder
 
 Options
 - Layout Customize
@@ -51,6 +53,6 @@ Rewatch Alogrythm:
 - Who you were/are with when watched
 - Who you are with now.
 - Watched Frequency of Others
-- Plot complexity
+- Plot complexity/comprehension
 - Enjoymnet on first/last watch
 - Mood matching
