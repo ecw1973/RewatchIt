@@ -1,22 +1,25 @@
 # RewatchReminder
 Movie Rewatch Reminder
 
-- Current Mood
+- Your current Mood?
+- Who are you with?
 
 Movie Metadata
 
-- Tag Watched Moviews watched metdata
-- Date/Time Watched
+- Watched When
+- Watched With
+- Watched Where
 - Percent Completed
 - Enjoyment Level
 - Plot Complexity
 - Plot Comprehension
 - LOL Level
 - Mood Before, during & after
+- Where to find/watch?
 
 Add Movies
 
-- Add Watched Movies
+- Manually Add Watched Movies
   - Browse
   - Search
   - Similar
@@ -27,6 +30,7 @@ Add Movies
 Rewatch Alogrythm:
 
 - Date since watched.
+- Who you were/are with.
 - High plot complexity
 - Enjoymnet on first/last watch
 - Mood match
