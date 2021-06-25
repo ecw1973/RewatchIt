@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RewatchIt.Data
 {
@@ -13,6 +11,10 @@ namespace RewatchIt.Data
         public string Title { get; set; }
         [JsonProperty("release_date")]
         public DateTime? ReleaseDate { get; set; }
+        [JsonProperty("vote_count")]
+        public int VoteCount { get; set; }
+        [JsonProperty("vote_average")]
+        public double VoteAvg { get; set; }
 
         #endregion
 
@@ -20,7 +22,7 @@ namespace RewatchIt.Data
 
         public override string ToString()
         {
-            return JsonSerializer.Serialize(this);
+            return $"{nameof(Title)}: {Title}";
         }
 
         #endregion

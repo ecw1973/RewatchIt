@@ -1,62 +1,61 @@
 ﻿@page "/test"
 @using RewatchIt.Services
 @using RewatchIt.Data
-@inject JsonFileMovieService MovieService
+@inject TmdbService MovieService
+@inject DialogService DialogService
 
 <h1>Movies</h1>
 
-<RadzenButton Click=@(args => Show()) Text="Show" Style="margin-bottom: 20px; width: 150px"/>
-<RadzenButton Click=@(args => Hide()) Text="Hide" Style="margin-bottom: 20px; width: 150px"/>
+<RadzenButton Click=@(args => ExecuteQuery()) Text="Query" Style="margin-bottom: 20px; width: 150px" />
+
+@{
+    <RadzenDataGrid @ref="movieGrid" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" PageSize="10"
+                    AllowPaging="true" AllowSorting="true" Data="@tmdbMovieList" TItem="TmdbMovie"
+                    ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+        <Columns>
+            <RadzenDataGridColumn TItem="TmdbMovie" Property="Title" Title="Title">
+                <Template Context="data">
+                    <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="help" MouseEnter=@(() => ShowDetails(data.Title)) Text="@data.Title" />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="TmdbMovie" Property="ReleaseDate" Title="Released Date" Width="20" FormatString="{0:d}" />
+            <RadzenDataGridColumn TItem="TmdbMovie" Property="VoteCount" Title="Popularity Score" Width="20" />
+        </Columns>
+    </RadzenDataGrid>
+}
 
 @code
 {
-    IEnumerable<Movie> movies;
-    List<TmdbMovie> tmdbMovies = new List<TmdbMovie>();
-    RadzenDataGrid<TmdbMovie> Grid = new RadzenDataGrid<TmdbMovie>();
+    readonly List<TmdbMovie> tmdbMovieList = new List<TmdbMovie>();
+    RadzenDataGrid<TmdbMovie> movieGrid;
 
-    protected override async Task OnInitializedAsync()
+    //protected override async Task OnInitializedAsync()
+    //{
+    //}
+
+    private async Task ExecuteQuery()
     {
-    }
+        int queryYear = 1986;
 
-    private async Task Show()
-    {
-        //await Task.Run(async () =>
-        //{
-        //int findMovieCount = await MovieService.FindMovieCount();
-        int findMovieCount = 25;
-
-        for (int i = 1; i <= findMovieCount; i++)
+        int moviePageCount = await MovieService.GetMoviePageCount(queryYear);
+        if (moviePageCount > 25)
         {
-            //tmdbMovies = await MovieService.GetMovies(1);
-            List<TmdbMovie> result = await MovieService.GetMovies(i);
-            tmdbMovies.AddRange(result);
-            await Grid.Reload();
+            moviePageCount = 25;
         }
-        //});
 
+        for (int page = 1; page <= moviePageCount; page++)
+        {
+            List<TmdbMovie> result = await MovieService.GetMovies(page, queryYear);
+            tmdbMovieList.AddRange(result);
+            await movieGrid.Reload();
+        }
     }
 
-    private void Hide()
+    async Task ShowDetails(string orderId)
     {
-        Grid.Reload();
+        await DialogService.OpenAsync<TmdbMovieCard>($"Order {orderId}",
+            new Dictionary<string, object>() { { "OrderID", orderId } },
+            new DialogOptions() { Width = "700px", Height = "530px" });
     }
 }
 
-@*@{
-    foreach (var movie in tmdbMovies)
-    {
-    <li>@movie.Title</li>
-    }
-}*@
-
-
-@{
-        <RadzenDataGrid @ref="Grid" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" PageSize="10"
-                        AllowPaging="true" AllowSorting="true" Data="@tmdbMovies" TItem="TmdbMovie"
-                        ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
-            <Columns>
-                <RadzenDataGridColumn TItem="TmdbMovie" Property="Title" Title="Title"/>
-                <RadzenDataGridColumn TItem="TmdbMovie" Property="ReleaseDate" Title="ReleaseDate" Width="20"/>
-            </Columns>
-        </RadzenDataGrid>
-}

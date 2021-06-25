@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Radzen;
 using RewatchIt.Data;
 using RewatchIt.Services;
 
@@ -33,7 +34,8 @@ namespace RewatchIt
     {
       services.AddRazorPages();
       services.AddServerSideBlazor();
-      services.AddSingleton<JsonFileMovieService>();
+      services.AddSingleton<TmdbService>();
+      services.AddTransient<DialogService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

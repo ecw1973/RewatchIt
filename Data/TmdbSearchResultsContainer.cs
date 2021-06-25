@@ -3,8 +3,10 @@ using Newtonsoft.Json;
 
 namespace RewatchIt.Data
 {
-    public class SearchContainer<T>
+    public class TmdbSearchResultsContainer<T>
     {
+        #region Properties
+
         [JsonProperty("page")]
         public int Page { get; set; }
 
@@ -16,5 +18,7 @@ namespace RewatchIt.Data
 
         [JsonProperty("total_results")]
         public int TotalResults { get; set; }
+
+        #endregion
     }
 }
