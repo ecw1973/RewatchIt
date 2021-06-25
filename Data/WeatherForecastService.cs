@@ -6,14 +6,20 @@ namespace RewatchIt.Data
 {
   public class WeatherForecastService
   {
-    private static readonly string[] Summaries = new[]
+    #region Fields
+
+    private static readonly string[] Summaries =
     {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+      "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
+    #endregion
+
+    #region Methods
 
     public Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
     {
-      var rng = new Random();
+      Random rng = new Random();
       return Task.FromResult(Enumerable.Range(1, 5).Select(index => new WeatherForecast
       {
         Date = startDate.AddDays(index),
@@ -21,5 +27,7 @@ namespace RewatchIt.Data
         Summary = Summaries[rng.Next(Summaries.Length)]
       }).ToArray());
     }
+
+    #endregion
   }
 }

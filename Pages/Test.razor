@@ -1,0 +1,45 @@
+﻿@page "/test"
+@using RewatchIt.Services
+@using RewatchIt.Data
+@inject JsonFileMovieService MovieService
+
+<h1>Test</h1>
+
+<p>Current count: @currentCount</p>
+
+<RadzenButton Click=@(args => Show()) Text="Show" Style="margin-bottom: 20px; width: 150px" />
+<RadzenButton Click=@(args => Hide()) Text="Hide" Style="margin-bottom: 20px; width: 150px" />
+
+@code
+{
+    private int currentCount;
+    IEnumerable<Movie> movies;
+
+    private void Show()
+    {
+        currentCount++;
+        movies = MovieService.GetMovies();
+    }
+
+    private void Hide()
+    {
+        currentCount--;
+        movies = null;
+    }
+}
+
+@{
+    if (movies != null)
+    {
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" PageSize="5"
+                        AllowPaging="true" AllowSorting="true" Data="@movies" TItem="Movie"
+                        ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+            <Columns>
+                <RadzenDataGridColumn TItem="Movie" Property="Id" Title="Id" />
+                <RadzenDataGridColumn TItem="Movie" Property="Title" Title="Title1" Width="150px" />
+                <RadzenDataGridColumn TItem="Movie" Property="Year" Title="Year1" />
+                <RadzenDataGridColumn TItem="Movie" Property="Url" Title="Url1" />
+            </Columns>
+        </RadzenDataGrid>
+    }
+}

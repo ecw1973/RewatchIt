@@ -1,25 +1,31 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RewatchIt.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RewatchIt.Services;
 
 namespace RewatchIt
 {
   public class Startup
   {
+    #region Constructors
+
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
     }
 
+    #endregion
+
+    #region Properties
+
     public IConfiguration Configuration { get; }
+
+    #endregion
+
+    #region Methods
 
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -28,6 +34,7 @@ namespace RewatchIt
       services.AddRazorPages();
       services.AddServerSideBlazor();
       services.AddSingleton<WeatherForecastService>();
+      services.AddTransient<JsonFileMovieService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,5 +59,7 @@ namespace RewatchIt
         endpoints.MapFallbackToPage("/_Host");
       });
     }
+
+    #endregion
   }
 }
