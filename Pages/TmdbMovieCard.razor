@@ -1,13 +1,68 @@
-﻿@page "/tmdbMovieCard"
-@using System.Diagnostics
+﻿@page "/tmdbDialogcard/{MovieId}"
+@using RewatchIt.Services
+@using RewatchIt.Data
+@inject DialogService DialogService
+@inject TmdbService MovieService
 
-<h1>Hello, world!</h1>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
 
-Welcome to your new app.
+    .imgbox {
+        display: grid;
+        height: 100%;
+    }
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    .center-fit {
+        margin: auto;
+        max-height: 100vh;
+        max-width: 50%;
+    }
+</style>
+
+<RadzenCard Style="margin-bottom: 20px;">
+    <div class="imgbox">
+        @*<img class="center-fit" src=@movieDetails.PosterUrl />*@
+
+        <RadzenImage Path="@movieDetails.PosterUrl" Style="width:100px;" />
+
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div>Title:</div>
+            <b>@movieDetails.Title</b>
+            <div style="margin-top:20px">Desc:</div>
+            <b>@movieDetails.Title</b>
+        </div>
+        <div class="col-md-6">
+            <div style="margin-top:20px">Release Date:</div>
+            <b>@(movieDetails.ReleaseDate)</b>
+            <div style="margin-top:20px">Release Date:</div>
+            <b>@(movieDetails.ReleaseDate)</b>
+        </div>
+    </div>
+</RadzenCard>
+
 
 @code
 {
-    int test = 1;
+    [Parameter]
+    public int MovieId { get; set; }
+
+    TmdbMovie movieDetails = new TmdbMovie();
+
+    protected override async Task OnInitializedAsync()
+    {
+        movieDetails = await MovieService.GetMovie(MovieId);
+    }
+
+    //private void HandleKeyDown(KeyboardEventArgs obj)
+    //{
+    //    if (obj.Key == "Escape")
+    //    {
+    //        DialogService.Close();
+    //    }
+    //}
 }

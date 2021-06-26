@@ -76,6 +76,22 @@ namespace RewatchIt.Services
             return default;
         }
 
+        public async Task<TmdbMovie> GetMovie(int id)
+        {
+            HttpResponseMessage response =
+                await client.GetAsync($"movie/{id}?api_key={apiKey}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string queryResponse = response.Content.ReadAsStringAsync().Result;
+                TmdbMovie movie = JsonConvert.DeserializeObject<TmdbMovie>(queryResponse);
+                movie.PosterUrl = "https://www.themoviedb.org/t/p/original/" + movie.PosterPath;
+                return movie;
+            }
+
+            return default;
+        }
+
         #endregion
     }
 }

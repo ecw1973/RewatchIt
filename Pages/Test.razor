@@ -6,7 +6,7 @@
 
 <h1>Movies</h1>
 
-<RadzenButton Click=@(args => ExecuteQuery()) Text="Query" Style="margin-bottom: 20px; width: 150px" />
+<RadzenButton Click=@(args => ExecuteQuery()) Text="Query" Style="margin-bottom: 20px; width: 150px"/>
 
 @{
     <RadzenDataGrid @ref="movieGrid" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" PageSize="10"
@@ -15,23 +15,20 @@
         <Columns>
             <RadzenDataGridColumn TItem="TmdbMovie" Property="Title" Title="Title">
                 <Template Context="data">
-                    <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="help" MouseEnter=@(() => ShowDetails(data.Title)) Text="@data.Title" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Click=@(() => ShowDetails(data.Id, data.Title)) Text="@data.Title"/>
                 </Template>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="TmdbMovie" Property="ReleaseDate" Title="Released Date" Width="20" FormatString="{0:d}" />
-            <RadzenDataGridColumn TItem="TmdbMovie" Property="VoteCount" Title="Popularity Score" Width="20" />
+            <RadzenDataGridColumn TItem="TmdbMovie" Property="ReleaseDate" Title="Released Date" Width="20" FormatString="{0:d}"/>
+            <RadzenDataGridColumn TItem="TmdbMovie" Property="VoteCount" Title="Popularity Score" Width="20"/>
         </Columns>
     </RadzenDataGrid>
 }
+
 
 @code
 {
     readonly List<TmdbMovie> tmdbMovieList = new List<TmdbMovie>();
     RadzenDataGrid<TmdbMovie> movieGrid;
-
-    //protected override async Task OnInitializedAsync()
-    //{
-    //}
 
     private async Task ExecuteQuery()
     {
@@ -51,11 +48,12 @@
         }
     }
 
-    async Task ShowDetails(string orderId)
+    async Task ShowDetails(int movieId, string movieTitle)
     {
-        await DialogService.OpenAsync<TmdbMovieCard>($"Order {orderId}",
-            new Dictionary<string, object>() { { "OrderID", orderId } },
-            new DialogOptions() { Width = "700px", Height = "530px" });
+        await DialogService.OpenAsync<TmdbMovieCard>($"{movieTitle}",
+            new Dictionary<string, object> {{"MovieId", movieId}},
+            new DialogOptions {Width = "700px", Height = "600px"});
     }
+
 }
 

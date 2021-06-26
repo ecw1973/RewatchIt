@@ -7,7 +7,7 @@ namespace RewatchIt.Data
     {
         #region Properties
 
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; }
         [JsonProperty("release_date")]
         public DateTime? ReleaseDate { get; set; }
@@ -15,6 +15,9 @@ namespace RewatchIt.Data
         public int VoteCount { get; set; }
         [JsonProperty("vote_average")]
         public double VoteAvg { get; set; }
+        [JsonProperty("poster_path")]
+        public string PosterPath { get; set; }
+        public string PosterUrl { get; set; }
 
         #endregion
 
