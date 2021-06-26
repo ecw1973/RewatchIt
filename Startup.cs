@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Radzen;
 using RewatchIt.Services;
+using Syncfusion.Blazor;
 
 namespace RewatchIt
 {
@@ -43,11 +44,16 @@ namespace RewatchIt
             services.AddScoped<NotificationService>();
             services.AddScoped<TooltipService>();
             services.AddScoped<ContextMenuService>();
+
+            // Syncfusion Services
+            services.AddSyncfusionBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NDYzNzcyQDMxMzkyZTMxMmUzMGk4VTFXR3N1dCs2UW03T1A3NzZxblhXaFNTQTgzamU5cWUzVmZVOGhCaGs9");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

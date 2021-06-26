@@ -1,49 +1,35 @@
 ﻿@page "/tmdbDialogcard/{MovieId}"
 @using RewatchIt.Services
 @using RewatchIt.Data
-@inject DialogService DialogService
-@inject TmdbService MovieService
+@using Syncfusion.Blazor.Cards
+@inject TmdbService movieService
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-    }
-
-    .imgbox {
-        display: grid;
-        height: 100%;
-    }
-
-    .center-fit {
-        margin: auto;
-        max-height: 100vh;
-        max-width: 50%;
-    }
-</style>
-
-<RadzenCard Style="margin-bottom: 20px;">
-    <div class="imgbox">
-        @*<img class="center-fit" src=@movieDetails.PosterUrl />*@
-
-        <RadzenImage Path="@movieDetails.PosterUrl" Style="width:100px;" />
-
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div>Title:</div>
-            <b>@movieDetails.Title</b>
-            <div style="margin-top:20px">Desc:</div>
-            <b>@movieDetails.Title</b>
-        </div>
-        <div class="col-md-6">
-            <div style="margin-top:20px">Release Date:</div>
-            <b>@(movieDetails.ReleaseDate)</b>
-            <div style="margin-top:20px">Release Date:</div>
-            <b>@(movieDetails.ReleaseDate)</b>
-        </div>
-    </div>
-</RadzenCard>
+<SfCard Orientation="CardOrientation.Horizontal">
+    <img src="@movieDetails.PosterUrl" class="img-thumbnail" style="height: 75%; width: 50%;">
+    <CardStacked>
+        <CardContent>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col" align="right">
+                        <h5>@movieDetails.ReleaseDate.ToShortDateString()</h5>
+                    </div>
+                </div>
+                <div class="row">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h3>@movieDetails.TagLine</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p>@movieDetails.Overview</p>
+                    </div>
+                </div>
+            </div>
+        </CardContent>
+    </CardStacked>
+</SfCard>
 
 
 @code
@@ -55,14 +41,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        movieDetails = await MovieService.GetMovie(MovieId);
+        if (MovieId > 0)
+        {
+            movieDetails = await movieService.GetMovie(MovieId);
+        }
     }
-
-    //private void HandleKeyDown(KeyboardEventArgs obj)
-    //{
-    //    if (obj.Key == "Escape")
-    //    {
-    //        DialogService.Close();
-    //    }
-    //}
 }

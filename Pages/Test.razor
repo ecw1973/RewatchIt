@@ -1,58 +1,82 @@
 ﻿@page "/test"
 @using RewatchIt.Services
 @using RewatchIt.Data
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Buttons
+@using TextAlign = Syncfusion.Blazor.Grids.TextAlign
 @inject TmdbService MovieService
 @inject DialogService DialogService
 
 <h1>Movies</h1>
 
-<RadzenButton Click=@(args => ExecuteQuery()) Text="Query" Style="margin-bottom: 20px; width: 150px"/>
+<SfButton @onclick="() => ExecuteQuery(1986)">Query</SfButton>
+
+<div class="col-lg-12 control-section">
+    <div class="content-wrapper">
+        <div class="row">
+            <SfGrid @ref="movieGrid" DataSource="@tmdbMovieList" AllowPaging="true">
+                <GridColumns>
+                    <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Title" TextAlign="TextAlign.Center" Width="120">
+                        <Template>
+                            @{
+                                TmdbMovie selectedMovie = (TmdbMovie)context;
+                                <SfButton CssClass="e-outline" @onclick="() => ShowDetails(selectedMovie.Id, selectedMovie.Title)">@selectedMovie.Title</SfButton>
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(TmdbMovie.ReleaseDate) Format="d" HeaderText="Release Date" Width="150"></GridColumn>
+                    <GridColumn Field=@nameof(TmdbMovie.VoteCount) HeaderText="Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+    </div>
+</div>
 
 @{
-    <RadzenDataGrid @ref="movieGrid" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" PageSize="10"
-                    AllowPaging="true" AllowSorting="true" Data="@tmdbMovieList" TItem="TmdbMovie"
-                    ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
-        <Columns>
-            <RadzenDataGridColumn TItem="TmdbMovie" Property="Title" Title="Title">
-                <Template Context="data">
-                    <RadzenButton ButtonStyle="ButtonStyle.Light" Click=@(() => ShowDetails(data.Id, data.Title)) Text="@data.Title"/>
-                </Template>
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="TmdbMovie" Property="ReleaseDate" Title="Released Date" Width="20" FormatString="{0:d}"/>
-            <RadzenDataGridColumn TItem="TmdbMovie" Property="VoteCount" Title="Popularity Score" Width="20"/>
-        </Columns>
-    </RadzenDataGrid>
+    if (IsMovieDetailsDialogVisible)
+    {
+        <SfDialog @bind-Visible="@IsMovieDetailsDialogVisible" AllowDragging="true" IsModal="true" Width="640px" Height="550px" ShowCloseIcon="true">
+            <DialogTemplates>
+                <Content>
+                    <TmdbMovieCard MovieId="@SelectedMovieId" />
+                </Content>
+            </DialogTemplates>
+            <DialogAnimationSettings Effect="@DialogEffect.Zoom"></DialogAnimationSettings>
+        </SfDialog>
+    }
 }
-
 
 @code
 {
     readonly List<TmdbMovie> tmdbMovieList = new List<TmdbMovie>();
-    RadzenDataGrid<TmdbMovie> movieGrid;
+    SfGrid<TmdbMovie> movieGrid;
 
-    private async Task ExecuteQuery()
+    bool IsMovieDetailsDialogVisible { get; set; }
+    private int SelectedMovieId { get; set; }
+    private string SelectedMovieTitle { get; set; }
+
+    private async Task ExecuteQuery(int queryYear)
     {
-        int queryYear = 1986;
-
         int moviePageCount = await MovieService.GetMoviePageCount(queryYear);
-        if (moviePageCount > 25)
+        if (moviePageCount > 10)
         {
-            moviePageCount = 25;
+            moviePageCount = 10;
         }
 
         for (int page = 1; page <= moviePageCount; page++)
         {
             List<TmdbMovie> result = await MovieService.GetMovies(page, queryYear);
             tmdbMovieList.AddRange(result);
-            await movieGrid.Reload();
+            movieGrid.Refresh();
         }
     }
 
-    async Task ShowDetails(int movieId, string movieTitle)
+    void ShowDetails(int movieId, string movieTitle)
     {
-        await DialogService.OpenAsync<TmdbMovieCard>($"{movieTitle}",
-            new Dictionary<string, object> {{"MovieId", movieId}},
-            new DialogOptions {Width = "700px", Height = "600px"});
+        SelectedMovieId = movieId;
+        SelectedMovieTitle = movieTitle;
+        IsMovieDetailsDialogVisible = true;
     }
 
 }
