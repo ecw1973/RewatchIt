@@ -70,6 +70,11 @@ namespace RewatchIt.Services
 
                 resultsContainer.Results = resultsContainer.Results.Where(x => x.VoteCount > 10).ToList();
 
+                foreach (TmdbMovie movie in resultsContainer.Results)
+                {
+                    movie.PosterUrl = "https://www.themoviedb.org/t/p/original/" + movie.PosterPath;
+                }
+
                 return resultsContainer.Results;
             }
 

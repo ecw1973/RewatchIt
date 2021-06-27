@@ -1,0 +1,153 @@
+﻿@page "/browse"
+@using RewatchIt.Services
+@using RewatchIt.Data
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using TextAlign = Syncfusion.Blazor.Grids.TextAlign
+@inject TmdbService MovieService
+@inject DialogService DialogService
+
+<h1>Movies</h1>
+
+<div class="search_wrapper">
+    <div class="row">
+        <div class="col-sm-2">
+            <SfDropDownList TItem="int" TValue="int" @bind-Value="@SelectedYear" DataSource="@Years" PopupHeight="230px" Placeholder="Select a year">
+            </SfDropDownList>
+        </div>
+
+        <div class="col-sm-3">
+            <SfButton @onclick="ExecuteQuery">Query</SfButton>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+            <SfGrid @ref="movieGrid" DataSource="@tmdbMovieList" EnableHover="false" AllowPaging="true" AllowSelection="false">
+                <GridPageSettings PageSize="5" PageSizes="PageSizes"></GridPageSettings>
+                <GridColumns>
+                    <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Poster" TextAlign="TextAlign.Center" Width="100">
+                        <Template>
+                            @{
+                                TmdbMovie selectedMovie = (TmdbMovie)context;
+                                <div class="posterThumb">
+                                    <a><img src="@selectedMovie.PosterUrl" @onclick="() => ShowDetails(selectedMovie.Id, selectedMovie.Title)"></a>
+                                </div>
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Movie Title" Width="150"></GridColumn>
+                    <GridColumn Field=@nameof(TmdbMovie.ReleaseDate) Format="d" HeaderText="Release Date" Width="40"></GridColumn>
+                    @*<GridColumn Field=@nameof(TmdbMovie.VoteCount) HeaderText="Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>*@
+                </GridColumns>
+            </SfGrid>
+</div>
+
+<style>
+
+    .posterThumb img {
+        width: 25%;
+        height: 25%;
+    }
+
+    .search_wrapper {
+        horiz-align: left;
+        padding-left: 0;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+</style>
+
+@{
+    if (IsMovieDetailsDialogVisible)
+    {
+        <SfDialog @bind-Visible="@IsMovieDetailsDialogVisible" AllowDragging="true" IsModal="true" Width="640px" Height="550px" ShowCloseIcon="true">
+            <DialogTemplates>
+                <Content>
+                    <TmdbMovieCard MovieId="@SelectedMovieId" />
+                </Content>
+            </DialogTemplates>
+            <DialogAnimationSettings Effect="@DialogEffect.Zoom"></DialogAnimationSettings>
+        </SfDialog>
+    }
+}
+
+@code
+{
+
+    private List<int> Years
+    {
+        get
+        {
+            List<int> years = new List<int>();
+            for (int i = 1970; i < 2022; i++)
+            {
+                years.Add(i);
+            }
+            return years;
+        }
+    }
+
+    readonly List<TmdbMovie> tmdbMovieList = new List<TmdbMovie>();
+    SfGrid<TmdbMovie> movieGrid;
+    private bool isMovieDetailsDialogVisible;
+    private int selectedMovieId;
+    private string selectedMovieTitle;
+    private int selectedYear = 2021;
+
+    bool IsMovieDetailsDialogVisible
+    {
+        get => isMovieDetailsDialogVisible;
+        set => isMovieDetailsDialogVisible = value;
+    }
+    private int SelectedMovieId
+    {
+        get => selectedMovieId;
+        set => selectedMovieId = value;
+    }
+    private string SelectedMovieTitle
+    {
+        get => selectedMovieTitle;
+        set => selectedMovieTitle = value;
+    }
+
+    private async Task ExecuteQuery()
+    {
+        tmdbMovieList.Clear();
+
+        int moviePageCount = await MovieService.GetMoviePageCount(SelectedYear);
+        if (moviePageCount > 10)
+        {
+            moviePageCount = 10;
+        }
+
+        for (int page = 1; page <= moviePageCount; page++)
+        {
+            List<TmdbMovie> result = await MovieService.GetMovies(page, SelectedYear);
+            tmdbMovieList.AddRange(result);
+            movieGrid.Refresh();
+        }
+    }
+
+    void ShowDetails(int movieId, string movieTitle)
+    {
+        SelectedMovieId = movieId;
+        SelectedMovieTitle = movieTitle;
+        IsMovieDetailsDialogVisible = true;
+    }
+
+    public int SelectedYear
+    {
+        get => selectedYear;
+        set
+        {
+            selectedYear = value;
+            ExecuteQuery();
+        }
+    }
+
+    public object PageSizes => new List<int> {5,10,15,20};
+}
+
