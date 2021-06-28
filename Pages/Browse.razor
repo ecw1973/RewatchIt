@@ -11,6 +11,8 @@
 
 <h1>Movies</h1>
 
+// Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;
+
 <div class="search_wrapper">
     <div class="row">
         <div class="col-sm-2">
@@ -25,24 +27,24 @@
 </div>
 
 <div class="row">
-            <SfGrid @ref="movieGrid" DataSource="@tmdbMovieList" EnableHover="false" AllowPaging="true" AllowSelection="false">
-                <GridPageSettings PageSize="5" PageSizes="PageSizes"></GridPageSettings>
-                <GridColumns>
-                    <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Poster" TextAlign="TextAlign.Center" Width="100">
-                        <Template>
-                            @{
-                                TmdbMovie selectedMovie = (TmdbMovie)context;
-                                <div class="posterThumb">
-                                    <a><img src="@selectedMovie.PosterUrl" @onclick="() => ShowDetails(selectedMovie.Id, selectedMovie.Title)"></a>
-                                </div>
-                            }
-                        </Template>
-                    </GridColumn>
-                    <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Movie Title" Width="150"></GridColumn>
-                    <GridColumn Field=@nameof(TmdbMovie.ReleaseDate) Format="d" HeaderText="Release Date" Width="40"></GridColumn>
-                    @*<GridColumn Field=@nameof(TmdbMovie.VoteCount) HeaderText="Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>*@
-                </GridColumns>
-            </SfGrid>
+    <SfGrid @ref="movieGrid" DataSource="@tmdbMovieList" EnableHover="false" AllowPaging="true" AllowSelection="false">
+        <GridPageSettings PageSize="5" PageSizes="PageSizes"></GridPageSettings>
+        <GridColumns>
+            <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Poster" TextAlign="TextAlign.Center" Width="100">
+                <Template>
+                    @{
+                        TmdbMovie selectedMovie = (TmdbMovie)context;
+                        <div class="posterThumb">
+                            <a><img src="@selectedMovie.PosterUrl" @onclick="() => ShowDetails(selectedMovie.Id, selectedMovie.Title)"></a>
+                        </div>
+                    }
+                </Template>
+            </GridColumn>
+            <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Movie Title" Width="150"></GridColumn>
+            <GridColumn Field=@nameof(TmdbMovie.ReleaseDate) Format="d" HeaderText="Release Date" Width="40"></GridColumn>
+            @*<GridColumn Field=@nameof(TmdbMovie.VoteCount) HeaderText="Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>*@
+        </GridColumns>
+    </SfGrid>
 </div>
 
 <style>
@@ -148,6 +150,6 @@
         }
     }
 
-    public object PageSizes => new List<int> {5,10,15,20};
+    public object PageSizes => new List<int> { 5, 10, 15, 20 };
 }
 

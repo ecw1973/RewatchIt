@@ -1,23 +1,36 @@
-﻿namespace RewatchIt.Data
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace RewatchIt.Data
 {
     public class WatchedMovie
     {
         #region Properties
 
-        public string Id { get; set; }
+        public int ID { get; set; }
         public string Title { get; set; }
-        public int Year { get; set; }
-        public string ImageUrl { get; set; }
+        public int Rating { get; set; }
 
         #endregion
+    }
 
-        #region Methods
+    public class WatchedMovieContext : DbContext
+    {
+        #region Constructors
 
-        public override string ToString()
+        public WatchedMovieContext(DbContextOptions<WatchedMovieContext> options) : base(options)
         {
-            return $"{nameof(Title)}: {Title}";
         }
 
         #endregion
+
+        #region Properties
+
+        public DbSet<WatchedMovie> Movies { get; set; }
+        #endregion
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<WatchedMovie>().ToTable("WatchedMovie");
+        }
     }
 }

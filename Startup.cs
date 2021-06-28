@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Radzen;
+using RewatchIt.Data;
 using RewatchIt.Services;
 using Syncfusion.Blazor;
 
@@ -47,6 +49,11 @@ namespace RewatchIt
 
             // Syncfusion Services
             services.AddSyncfusionBlazor();
+
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<WatchedMovieContext>(options => options.UseSqlServer(connectionString));
+
+            //services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
