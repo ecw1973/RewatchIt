@@ -26,11 +26,16 @@ namespace RewatchIt.Data
         #region Properties
 
         public DbSet<WatchedMovie> Movies { get; set; }
+
         #endregion
+
+        #region Event Handlers
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WatchedMovie>().ToTable("WatchedMovie");
         }
+
+        #endregion
     }
 }
