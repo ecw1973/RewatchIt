@@ -50,8 +50,14 @@ namespace RewatchIt
             // Syncfusion Services
             services.AddSyncfusionBlazor();
 
+
+            
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<WatchedMovieContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContextFactory<WatchedMovieContext>(
+                options => options.UseSqlServer(connectionString));
+
+            //services.AddDbContext<WatchedMovieContext>(options => options.UseSqlServer(connectionString));
+
 
             //services.AddDatabaseDeveloperPageExceptionFilter();
         }

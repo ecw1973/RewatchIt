@@ -1,22 +1,9 @@
 ﻿@page "/browse"
-@using RewatchIt.Services
-@using RewatchIt.Data
-@using Syncfusion.Blazor.Grids
-@using Syncfusion.Blazor.Popups
-@using Syncfusion.Blazor.DropDowns
-@using Syncfusion.Blazor.Buttons
-@using TextAlign = Syncfusion.Blazor.Grids.TextAlign
-@using System.Diagnostics
-@using System.Linq
-@using Microsoft.EntityFrameworkCore
-@using Microsoft.EntityFrameworkCore.ChangeTracking
+@using Radzen.Blazor
 @inject TmdbService MovieService
-@inject DialogService DialogService
-@inject WatchedMovieContext watchedMovieDbContext
+@inject IDbContextFactory<WatchedMovieContext> DbContextFactory
 
 <h1>Movies</h1>
-
-// Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;
 
 <div class="search_wrapper">
     <div class="row">
@@ -47,23 +34,22 @@
             </GridColumn>
             <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Movie Title" Width="150"></GridColumn>
             <GridColumn Field=@nameof(TmdbMovie.ReleaseDate) Format="d" HeaderText="Release Date" Width="40"></GridColumn>
-            @*<GridColumn Field=@nameof(TmdbMovie.VoteCount) HeaderText="Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="130"></GridColumn>*@
             <GridColumn Field="@nameof(TmdbMovie.ReleaseDate)" HeaderText="Rating" TextAlign="TextAlign.Center" Width="100">
                 <Template>
                     @{
+                        using WatchedMovieContext dbContext = DbContextFactory.CreateDbContext();
                         TmdbMovie selectedMovie = (TmdbMovie)context;
-                        //WatchedMovie watchedMovie = watchedMovieDbContext.Movies.AsNoTracking().FirstOrDefault(x => x.ID == selectedMovie.Id);
-                        WatchedMovie watchedMovie = watchedMovieDbContext.Movies.FirstOrDefault(x => x.ID == selectedMovie.Id);
+                        WatchedMovie watchedMovie = dbContext.Movies.FirstOrDefault(x => x.ID == selectedMovie.Id);
                         if (watchedMovie == null)
                         {
                             <RadzenRating Stars="5" Value="0" Change=@(args => OnRatingChange(selectedMovie, args)) />
                         }
                         else
                         {
-                            watchedMovieDbContext.Entry(watchedMovie).State = EntityState.Detached;
+                            dbContext.Entry(watchedMovie).State = EntityState.Detached;
                             <RadzenRating Stars="5" Value="@watchedMovie.Rating" Change=@(args => OnRatingChange(selectedMovie, args)) />
                         }
-   
+
                     }
                 </Template>
             </GridColumn>
@@ -139,21 +125,28 @@
         set => selectedMovieTitle = value;
     }
 
-    private async Task ExecuteQuery()
+    private async void ExecuteQuery()
     {
+        await movieGrid.GoToPage(1);
         tmdbMovieList.Clear();
+        movieGrid.Refresh();
 
         int moviePageCount = await MovieService.GetMoviePageCount(SelectedYear);
-        if (moviePageCount > 10)
+        if (moviePageCount > 25)
         {
-            moviePageCount = 10;
+            moviePageCount = 25;
         }
 
         for (int page = 1; page <= moviePageCount; page++)
         {
             List<TmdbMovie> result = await MovieService.GetMovies(page, SelectedYear);
             tmdbMovieList.AddRange(result);
-            movieGrid.Refresh();
+
+            if (movieGrid.PageSettings.CurrentPage == page)
+            {
+                movieGrid.Refresh();
+            }
+            
         }
     }
 
@@ -176,22 +169,22 @@
 
     public object PageSizes => new List<int> { 5, 10, 15, 20 };
 
-    private void OnRatingChange(TmdbMovie movie, int rating)
+    private async void OnRatingChange(TmdbMovie movie, int rating)
     {
-        EntityEntry<WatchedMovie> entityEntry;
+        await using WatchedMovieContext dbContext = DbContextFactory.CreateDbContext();
 
-        if (watchedMovieDbContext.Movies.Any(x => x.ID == movie.Id))
+        WatchedMovie watchedMovie = await dbContext.Movies.FirstOrDefaultAsync(x => x.ID == movie.Id);
+
+        if (watchedMovie is null)
         {
-            entityEntry= watchedMovieDbContext.Update(new WatchedMovie() {ID = movie.Id, Title = movie.Title, Rating = rating});
+            dbContext.Add(new WatchedMovie() { ID = movie.Id, Title = movie.Title, Rating = rating });
         }
         else
         {
-            entityEntry = watchedMovieDbContext.Add(new WatchedMovie() {ID = movie.Id, Title = movie.Title, Rating = rating});
-
+            watchedMovie.Rating = rating;
         }
 
-        watchedMovieDbContext.SaveChanges();
-        entityEntry.State = EntityState.Detached;
+        await dbContext.SaveChangesAsync();
     }
 }
 
