@@ -19,16 +19,21 @@
 </div>
 
 <div class="row">
-    <SfGrid @ref="movieGrid" DataSource="@tmdbMovieList" EnableHover="false" AllowPaging="true" AllowSelection="false">
+    <SfGrid @ref="movieGrid" DataSource="@tmdbMovieList" EnableHover="false" AllowPaging="true" AllowSelection="false" EnableVirtualization="false">
         <GridPageSettings PageSize="5" PageSizes="PageSizes"></GridPageSettings>
         <GridColumns>
             <GridColumn Field=@nameof(TmdbMovie.Title) HeaderText="Poster" TextAlign="TextAlign.Center" Width="100">
                 <Template>
                     @{
                         TmdbMovie selectedMovie = (TmdbMovie)context;
-                        <div class="posterThumb">
-                            <a><img src="@selectedMovie.PosterUrl" @onclick="() => ShowDetails(selectedMovie.Id, selectedMovie.Title)"></a>
+
+                        <div class="poster_container">
+                            <img src="@selectedMovie.PosterUrl" class="image" @onclick="() => ShowDetails(selectedMovie.Id, selectedMovie.Title)">
                         </div>
+
+                        @*<div class="posterThumb">
+                                <img class="image" src="@selectedMovie.PosterUrl" @onclick="() => ShowDetails(selectedMovie.Id, selectedMovie.Title)">
+                        </div>*@
                     }
                 </Template>
             </GridColumn>
@@ -59,18 +64,33 @@
 
 <style>
 
-    .posterThumb img {
-        width: 25%;
-        height: 25%;
-    }
-
     .search_wrapper {
         horiz-align: left;
         padding-left: 0;
         padding-top: 50px;
         padding-bottom: 50px;
     }
-</style>
+
+    .poster_container {
+        position: relative;
+        width: 50%;
+    }
+
+    .poster_container .image {
+        cursor: pointer;
+        opacity: 1;
+        display: block;
+        width: 100%;
+        height: auto;
+        transition: .5s ease;
+        backface-visibility: hidden;
+    }
+
+    .poster_container:hover .image {
+        transform: scale(1.10)
+    }
+    
+    </style
 
 @{
     if (IsMovieDetailsDialogVisible)
