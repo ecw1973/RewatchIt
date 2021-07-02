@@ -28,7 +28,7 @@ namespace RewatchIt
     //        var services = scope.ServiceProvider;
     //        try
     //        {
-    //            var context = services.GetRequiredService<WatchedMovieContext>();
+    //            var context = services.GetRequiredService<ApplicationDbContext>();
     //            DbInitializer.Initialize(context);
     //        }
     //        catch (Exception ex)
@@ -49,7 +49,7 @@ namespace RewatchIt
 
   public static class DbInitializer
   {
-      public static void Initialize(WatchedMovieContext context)
+      public static void Initialize(ApplicationDbContext context)
       {
           bool result = context.Database.EnsureCreated();
           int count = context.Movies.Count();

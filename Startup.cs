@@ -27,7 +27,7 @@ namespace RewatchIt
 
         #region Properties
 
-        public IConfiguration Configuration { get; }
+        public static IConfiguration Configuration { get; set; }
 
         #endregion
 
@@ -54,8 +54,8 @@ namespace RewatchIt
             services.AddSyncfusionBlazor();
 
             // Database & EF.            
-            services.AddDbContextFactory<WatchedMovieContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MasterConnection")));
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("AuthenticationConnection")));
+            services.AddDbContextFactory<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             // Authentication & Authorization

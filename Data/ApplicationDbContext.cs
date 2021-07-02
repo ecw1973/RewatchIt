@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace RewatchIt.Data
 {
@@ -13,5 +14,21 @@ namespace RewatchIt.Data
         }
 
         #endregion
+
+        #region Properties
+
+        public DbSet<WatchedMovie> Movies { get; set; }
+
+        #endregion
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(Startup.Configuration.GetConnectionString("DbConnection"));
+        }
+
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    //modelBuilder.Entity<WatchedMovie>().HasNoKey();
+        //}
     }
 }

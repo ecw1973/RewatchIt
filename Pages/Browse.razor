@@ -1,7 +1,10 @@
 ﻿@page "/browse"
 @using Radzen.Blazor
+@using Microsoft.AspNetCore.Components
+@using System.Security.Claims
 @inject TmdbService MovieService
-@inject IDbContextFactory<WatchedMovieContext> DbContextFactory
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <h1>Movies</h1>
 
@@ -42,9 +45,9 @@
             <GridColumn Field="@nameof(TmdbMovie.ReleaseDate)" HeaderText="Rating" TextAlign="TextAlign.Center" Width="100">
                 <Template>
                     @{
-                        using WatchedMovieContext dbContext = DbContextFactory.CreateDbContext();
+                        using ApplicationDbContext dbContext = DbContextFactory.CreateDbContext();
                         TmdbMovie selectedMovie = (TmdbMovie)context;
-                        WatchedMovie watchedMovie = dbContext.Movies.FirstOrDefault(x => x.ID == selectedMovie.Id);
+                        WatchedMovie watchedMovie = dbContext.Movies.FirstOrDefault(x => x.MovieId == selectedMovie.Id && x.Username == currentUser);
                         if (watchedMovie == null)
                         {
                             <RadzenRating Stars="5" Value="0" Change=@(args => OnRatingChange(selectedMovie, args)) />
@@ -52,7 +55,7 @@
                         else
                         {
                             dbContext.Entry(watchedMovie).State = EntityState.Detached;
-                            <RadzenRating Stars="5" Value="@watchedMovie.Rating" Change=@(args => OnRatingChange(selectedMovie, args)) />
+                            <RadzenRating Stars="5" Value="@watchedMovie.UserRating" Change=@(args => OnRatingChange(selectedMovie, args)) />
                         }
 
                     }
@@ -66,9 +69,9 @@
 
     .search_wrapper {
         horiz-align: left;
+        padding-bottom: 50px;
         padding-left: 0;
         padding-top: 50px;
-        padding-bottom: 50px;
     }
 
     .poster_container {
@@ -77,13 +80,13 @@
     }
 
     .poster_container .image {
-        cursor: pointer;
-        opacity: 1;
-        display: block;
-        width: 100%;
-        height: auto;
-        transition: .5s ease;
         backface-visibility: hidden;
+        cursor: pointer;
+        display: block;
+        height: auto;
+        opacity: 1;
+        transition: .5s ease;
+        width: 100%;
     }
 
     .poster_container:hover .image {
@@ -109,6 +112,17 @@
 @code
 {
 
+     protected override async Task OnAfterRenderAsync(bool firstRender)
+     {
+         AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+         ClaimsPrincipal user = authState.User;
+         currentUser = "None";
+         if (user.Identity != null && user.Identity.IsAuthenticated)
+         {
+             currentUser = user.Identity.Name;
+         }
+     }
+
     private List<int> Years
     {
         get
@@ -124,28 +138,14 @@
 
     readonly List<TmdbMovie> tmdbMovieList = new List<TmdbMovie>();
     SfGrid<TmdbMovie> movieGrid;
-    private bool isMovieDetailsDialogVisible;
-    private int selectedMovieId;
-    private string selectedMovieTitle;
-    private int selectedYear = 2021;
+     private int selectedYear = 2021;
+     private string currentUser = "None";
 
-    bool IsMovieDetailsDialogVisible
-    {
-        get => isMovieDetailsDialogVisible;
-        set => isMovieDetailsDialogVisible = value;
-    }
-    private int SelectedMovieId
-    {
-        get => selectedMovieId;
-        set => selectedMovieId = value;
-    }
-    private string SelectedMovieTitle
-    {
-        get => selectedMovieTitle;
-        set => selectedMovieTitle = value;
-    }
+     private bool IsMovieDetailsDialogVisible { get; set; }
+     private int SelectedMovieId { get; set; }
+     private string SelectedMovieTitle { get; set; }
 
-    private async void ExecuteQuery()
+     private async void ExecuteQuery()
     {
         await movieGrid.GoToPage(1);
         tmdbMovieList.Clear();
@@ -191,20 +191,21 @@
 
     private async void OnRatingChange(TmdbMovie movie, int rating)
     {
-        await using WatchedMovieContext dbContext = DbContextFactory.CreateDbContext();
+        await using ApplicationDbContext dbContext = DbContextFactory.CreateDbContext();
 
-        WatchedMovie watchedMovie = await dbContext.Movies.FirstOrDefaultAsync(x => x.ID == movie.Id);
+        WatchedMovie watchedMovie = await dbContext.Movies.FirstOrDefaultAsync(x => x.MovieId == movie.Id & x.Username == currentUser);
 
         if (watchedMovie is null)
         {
-            dbContext.Add(new WatchedMovie() { ID = movie.Id, Title = movie.Title, Rating = rating });
+            dbContext.Add(new WatchedMovie { MovieId = movie.Id, MovieTitle = movie.Title, UserRating = rating , Username = currentUser});
         }
         else
         {
-            watchedMovie.Rating = rating;
+            watchedMovie.UserRating = rating;
         }
 
         await dbContext.SaveChangesAsync();
     }
+
 }
 

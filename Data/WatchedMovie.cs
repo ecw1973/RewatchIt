@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RewatchIt.Data
 {
@@ -6,35 +6,11 @@ namespace RewatchIt.Data
     {
         #region Properties
 
-        public int ID { get; set; }
-        public string Title { get; set; }
-        public int Rating { get; set; }
-
-        #endregion
-    }
-
-    public class WatchedMovieContext : DbContext
-    {
-        #region Constructors
-
-        public WatchedMovieContext(DbContextOptions<WatchedMovieContext> options) : base(options)
-        {
-        }
-
-        #endregion
-
-        #region Properties
-
-        public DbSet<WatchedMovie> Movies { get; set; }
-
-        #endregion
-
-        #region Event Handlers
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<WatchedMovie>().ToTable("WatchedMovie");
-        }
+        public int Id { get; set; }
+        public int MovieId { get; set; }
+        public string MovieTitle { get; set; }
+        public int UserRating { get; set; }
+        public string Username{ get; set; }
 
         #endregion
     }

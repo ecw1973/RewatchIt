@@ -1,5 +1,36 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<SfButton @onclick="CheckLoginInfo">Test</SfButton>
+
+@{
+    if (currentUser != String.Empty)
+    {
+        <h5>Current User:@currentUser</h5>
+    }
+}
+
+@code
+{
+        string currentUser;
+
+        private async void CheckLoginInfo(MouseEventArgs args)
+        {
+            AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            ClaimsPrincipal user = authState.User;
+            if (user.Identity.IsAuthenticated)
+            {
+                currentUser = user.Identity.Name;
+            }
+            else
+            {
+                currentUser = "None";
+            }
+        }
+    }
