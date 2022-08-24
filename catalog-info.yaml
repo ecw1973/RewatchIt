@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: RewatchIt
+  annotations:
+    github.com/project-slug: ecw1973/RewatchIt
+spec:
+  type: other
+  lifecycle: unknown
+  owner: Ed
